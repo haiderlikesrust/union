@@ -1,36 +1,139 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# The Union
 
-## Getting Started
+**Where the internet comes together.** A single-community Reddit-style platform built with Next.js and PocketBase.
 
-First, run the development server:
+![The Union](https://img.shields.io/badge/The_Union-Community-6366f1?style=for-the-badge)
+
+## Features
+
+- **Authentication** — Sign up, log in, avatar upload, profile editing
+- **Posts** — Create text, image, or link posts with flair tags
+- **Comments** — Nested comment threads with reply support
+- **Voting** — Upvote/downvote on posts and comments with score sync
+- **Feed** — Sort by Hot, New, or Top with pagination
+- **Profiles** — User profiles with karma, bio, post/comment history
+- **Search** — Search posts by title/content, users by username
+- **Saved Posts** — Save and access posts later
+- **Notifications** — Get notified on comments, replies, and mentions
+- **Admin Panel** — Manage users, posts, reports, bans, and pin posts
+- **Markdown** — Markdown support in text posts and comments
+- **Dark Theme** — Beautiful dark-mode-first design
+- **Responsive** — Works on desktop and mobile with bottom nav
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Frontend | Next.js 15, TypeScript, App Router |
+| Styling | Tailwind CSS v4 |
+| Backend | PocketBase |
+| Auth | PocketBase Auth |
+| Database | PocketBase (SQLite) |
+| File Storage | PocketBase Files |
+
+## Quick Start
+
+### Prerequisites
+
+- **Node.js** 18+ 
+- **PocketBase** — Download from [pocketbase.io](https://pocketbase.io/docs/)
+
+### 1. Setup PocketBase
+
+Download PocketBase and place the executable in the project root (or anywhere):
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Example: download and extract to project root
+# Then start PocketBase
+./pocketbase serve
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+On first start, PocketBase will:
+- Create the admin dashboard at `http://127.0.0.1:8090/_/`
+- Auto-apply migrations from `pb_migrations/` to create all collections
+- Load hooks from `pb_hooks/` for vote sync, notifications, etc.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Create an admin account** at `http://127.0.0.1:8090/_/` on first visit.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 2. Setup Frontend
 
-## Learn More
+```bash
+# Install dependencies
+npm install
 
-To learn more about Next.js, take a look at the following resources:
+# Start development server
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Open [http://localhost:3000](http://localhost:3000) — you should see The Union landing page.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 3. Create Your First User
 
-## Deploy on Vercel
+1. Click **Sign up** on the landing page
+2. Create a user with username, email, and password
+3. To make this user an admin, go to PocketBase dashboard → `users` collection → edit the user → set `role` to `admin`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Environment Variables
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```env
+NEXT_PUBLIC_POCKETBASE_URL=http://127.0.0.1:8090
+```
+
+## Project Structure
+
+```
+the-union/
+├── pb_migrations/           # PocketBase schema migrations
+├── pb_hooks/                # PocketBase server-side hooks
+│   └── main.pb.js           # Vote sync, karma, notifications
+├── src/
+│   ├── app/                 # Next.js App Router pages
+│   │   ├── page.tsx         # Landing / Feed
+│   │   ├── login/           # Login page
+│   │   ├── signup/          # Signup page
+│   │   ├── create/          # Create post
+│   │   ├── post/[id]/       # Single post + edit
+│   │   ├── user/[username]/ # User profile
+│   │   ├── saved/           # Saved posts
+│   │   ├── search/          # Search
+│   │   ├── notifications/   # Notifications
+│   │   └── admin/           # Admin dashboard
+│   ├── components/
+│   │   ├── layout/          # Navbar, Sidebar, MobileNav
+│   │   ├── posts/           # PostCard, VoteButtons
+│   │   ├── comments/        # CommentThread, CommentItem, CommentForm
+│   │   ├── pages/           # FeedPage
+│   │   └── ui/              # Avatar, Button, Modal, Skeleton, etc.
+│   ├── hooks/               # useVote
+│   └── lib/                 # pocketbase, auth, types, utils
+├── .env.local
+└── package.json
+```
+
+## PocketBase Collections
+
+| Collection | Purpose |
+|-----------|---------|
+| `users` | Auth collection with bio, karma, role |
+| `posts` | Text, image, and link posts |
+| `comments` | Nested comments on posts |
+| `post_votes` | Post upvotes/downvotes |
+| `comment_votes` | Comment upvotes/downvotes |
+| `saved_posts` | User's saved posts |
+| `notifications` | User notifications |
+| `reports` | Content reports |
+| `bans` | User bans/suspensions |
+
+## Server-Side Hooks
+
+The `pb_hooks/main.pb.js` file handles:
+
+- **Vote deduplication** — Prevents duplicate votes, toggles/switches existing votes
+- **Score sync** — Recalculates post/comment scores after vote changes
+- **Comment count** — Updates post comment count on create/delete
+- **Karma sync** — Updates user karma based on total post + comment scores
+- **Notifications** — Creates notifications when someone comments or replies
+
+---
+
+Built for the internet. By the internet.

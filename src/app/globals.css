@@ -1,26 +1,379 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ─── Default theme: "The Union" — warm dark + teal signature (unique, not generic) ─── */
+@theme {
+  --color-bg-primary: #0c0d0e;
+  --color-bg-secondary: #141618;
+  --color-bg-tertiary: #1c1e21;
+  --color-bg-elevated: #23262a;
+  --color-bg-hover: #2c2f34;
+  --color-border: #2c2f34;
+  --color-border-light: #3d4147;
+  --color-text-primary: #f2f3f5;
+  --color-text-secondary: #9ca3af;
+  --color-text-muted: #6b7280;
+  --color-accent: #0d9488;
+  --color-accent-hover: #14b8a6;
+  --color-upvote: #0d9488;
+  --color-downvote: #64748b;
+  --color-success: #10b981;
+  --color-danger: #ef4444;
+  --color-warning: #f59e0b;
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ─── SpongeBob theme (Bikini Bottom vibes — custom font + palette) ─── */
+[data-theme="spongebob"] {
+  --color-bg-primary: #1a1612;
+  --color-bg-secondary: #2d2618;
+  --color-bg-tertiary: #3d3520;
+  --color-bg-elevated: #4a4028;
+  --color-bg-hover: #5c4f30;
+  --color-border: #8b7355;
+  --color-border-light: #a88b68;
+  --color-text-primary: #fff4d6;
+  --color-text-secondary: #ffe4a8;
+  --color-text-muted: #d4c49e;
+  --color-accent: #ffd54f;
+  --color-accent-hover: #ffe082;
+  --color-upvote: #ffd54f;
+  --color-downvote: #ef5350;
+  --color-success: #81c784;
+  --color-danger: #ef5350;
+  --color-warning: #ffb74d;
+  --font-sans: 'Fredoka', 'Comic Neue', ui-rounded, system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ─── Minecraft theme (blocky pixel font + grass/dirt/stone palette) ─── */
+[data-theme="minecraft"] {
+  --color-bg-primary: #1a1a1a;
+  --color-bg-secondary: #2d2d2d;
+  --color-bg-tertiary: #3d3d3d;
+  --color-bg-elevated: #4a4a4a;
+  --color-bg-hover: #5c5c5c;
+  --color-border: #5a4a3a;
+  --color-border-light: #6b5a4a;
+  --color-text-primary: #e8e8e8;
+  --color-text-secondary: #b8b8a8;
+  --color-text-muted: #8a8a7a;
+  --color-accent: #7cba3d;
+  --color-accent-hover: #8ed94a;
+  --color-upvote: #7cba3d;
+  --color-downvote: #c44;
+  --color-success: #5d9e2e;
+  --color-danger: #c44;
+  --color-warning: #e0a020;
+  --font-sans: 'Press Start 2P', 'Courier New', monospace;
+}
+
+/* ─── Reddit theme (subreddit look — dark mode palette + Reddit orange) ─── */
+[data-theme="reddit"] {
+  --color-bg-primary: #1A1A1B;
+  --color-bg-secondary: #272729;
+  --color-bg-tertiary: #343536;
+  --color-bg-elevated: #3A3A3C;
+  --color-bg-hover: #393A3D;
+  --color-border: #343536;
+  --color-border-light: #474748;
+  --color-text-primary: #D7DADC;
+  --color-text-secondary: #818384;
+  --color-text-muted: #6B6C6E;
+  --color-accent: #FF4500;
+  --color-accent-hover: #FF5722;
+  --color-upvote: #FF4500;
+  --color-downvote: #7193FF;
+  --color-success: #46D160;
+  --color-danger: #EA0027;
+  --color-warning: #FFB000;
+  --font-sans: 'Noto Sans', 'IBMPlexSans', system-ui, -apple-system, sans-serif;
+}
+
+/* ─── Call of Duty theme (tactical font + military dark + orange accent) ─── */
+[data-theme="cod"] {
+  --color-bg-primary: #0a0a0c;
+  --color-bg-secondary: #12121a;
+  --color-bg-tertiary: #1a1a24;
+  --color-bg-elevated: #22222e;
+  --color-bg-hover: #2a2a38;
+  --color-border: #2e2e3a;
+  --color-border-light: #3a3a4a;
+  --color-text-primary: #e8e8f0;
+  --color-text-secondary: #a0a0b0;
+  --color-text-muted: #6a6a7a;
+  --color-accent: #ff6b00;
+  --color-accent-hover: #ff8533;
+  --color-upvote: #ff6b00;
+  --color-downvote: #c44;
+  --color-success: #2ecc71;
+  --color-danger: #e74c3c;
+  --color-warning: #f39c12;
+  --font-sans: 'Orbitron', 'Segoe UI', system-ui, sans-serif;
+}
+
+/* Theme transition overlay — plays when switching theme */
+.theme-transition-overlay {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* Reddit: orange sweep then fade */
+.theme-transition-reddit {
+  background: #1A1A1B;
+  animation: redditReveal 1.05s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+
+@keyframes redditReveal {
+  0% {
+    clip-path: inset(0 100% 0 0);
+    opacity: 1;
+  }
+  40% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    pointer-events: none;
   }
 }
 
+/* Default theme: circle shrinks from full screen to center (iris-in reveal) */
+.theme-transition-default {
+  background: #0a0a0b;
+  animation: defaultReveal 1.1s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  transform-origin: 50% 50%;
+}
+
+@keyframes defaultReveal {
+  0% {
+    clip-path: circle(150vmax at 50% 50%);
+    opacity: 1;
+  }
+  45% {
+    clip-path: circle(0% at 50% 50%);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    clip-path: circle(0% at 50% 50%);
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+/* SpongeBob: bubbles float up and pop */
+.theme-transition-spongebob {
+  background: linear-gradient(180deg, #0d3d56 0%, #1a1612 100%);
+  animation: spongebobFadeOut 1.2s ease-out 0.5s forwards;
+}
+
+.theme-transition-spongebob .theme-bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 235, 59, 0.95), rgba(255, 193, 7, 0.85));
+  box-shadow: inset -2px -2px 4px rgba(255,255,255,0.3), inset 2px 2px 4px rgba(0,0,0,0.1);
+  animation: bubbleRise 1s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes bubbleRise {
+  0% {
+    transform: translateY(0) scale(0.4);
+    opacity: 0.95;
+  }
+  40% {
+    transform: translateY(-20vh) scale(0.85);
+    opacity: 1;
+  }
+  75% {
+    transform: translateY(-45vh) scale(1.25);
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateY(-75vh) scale(1.6);
+    opacity: 0;
+  }
+}
+
+@keyframes spongebobFadeOut {
+  0% {
+    opacity: 1;
+  }
+  45% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+/* Minecraft: single tiled layer (smooth, GPU-friendly) — grass block texture as repeating background */
+/* SVG data URL: 16x16 grass block (grass top, jagged edge, dirt + stone) */
+.theme-transition-minecraft {
+  background: #1a1a1a;
+  animation: minecraftFadeOut 1.4s ease-out 0.6s forwards;
+}
+
+.theme-transition-minecraft .theme-minecraft-tiled {
+  position: absolute;
+  inset: -64px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect fill='%238BC34A' width='16' height='2'/%3E%3Crect y='2' fill='%237CB342' width='16' height='1'/%3E%3Crect y='3' fill='%238BC34A' width='2' height='1'/%3E%3Crect x='2' y='3' fill='%235D9E2E' width='4' height='1'/%3E%3Crect x='6' y='3' fill='%237CB342' width='2' height='1'/%3E%3Crect x='8' y='3' fill='%235D9E2E' width='4' height='1'/%3E%3Crect x='12' y='3' fill='%237CB342' width='4' height='1'/%3E%3Crect y='4' fill='%235D9E2E' width='2' height='1'/%3E%3Crect x='2' y='4' fill='%237CB342' width='2' height='1'/%3E%3Crect x='4' y='4' fill='%235D9E2E' width='4' height='1'/%3E%3Crect x='8' y='4' fill='%238BC34A' width='2' height='1'/%3E%3Crect x='10' y='4' fill='%235D9E2E' width='4' height='1'/%3E%3Crect x='14' y='4' fill='%237CB342' width='2' height='1'/%3E%3Crect y='5' fill='%238B7355' width='16' height='11'/%3E%3Crect x='1' y='5' fill='%236B5344' width='1' height='1'/%3E%3Crect x='5' y='5' fill='%235A4A3A' width='2' height='1'/%3E%3Crect x='10' y='5' fill='%236B5344' width='1' height='1'/%3E%3Crect x='14' y='6' fill='%234A3A2A' width='1' height='1'/%3E%3Crect x='3' y='7' fill='%236B6B6B' width='1' height='1'/%3E%3Crect x='8' y='7' fill='%235A4A3A' width='2' height='1'/%3E%3Crect x='12' y='7' fill='%236B5344' width='1' height='1'/%3E%3Crect y='8' fill='%234A3A2A' width='2' height='1'/%3E%3Crect x='6' y='9' fill='%236B6B6B' width='1' height='1'/%3E%3Crect x='11' y='9' fill='%235A5A5A' width='1' height='1'/%3E%3Crect x='2' y='10' fill='%236B5344' width='1' height='1'/%3E%3Crect x='9' y='11' fill='%234A3A2A' width='2' height='1'/%3E%3Crect x='4' y='12' fill='%236B6B6B' width='1' height='1'/%3E%3Crect x='13' y='13' fill='%235A4A3A' width='1' height='1'/%3E%3Crect x='7' y='14' fill='%236B5344' width='1' height='1'/%3E%3C/svg%3E");
+  background-size: 64px 64px;
+  background-repeat: repeat;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  animation: minecraftTiledReveal 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes minecraftTiledReveal {
+  0% {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes minecraftFadeOut {
+  0% { opacity: 1; }
+  45% { opacity: 1; }
+  100% { opacity: 0; pointer-events: none; }
+}
+
+/* Call of Duty: scope-in style sweep */
+.theme-transition-cod {
+  background: radial-gradient(ellipse 80% 80% at 50% 50%, #0a0a0c 0%, #000 100%);
+  animation: codReveal 1.1s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+
+@keyframes codReveal {
+  0% {
+    clip-path: circle(100% at 50% 50%);
+    opacity: 1;
+  }
+  50% {
+    clip-path: circle(0% at 50% 50%);
+    opacity: 1;
+  }
+  100% {
+    clip-path: circle(0% at 50% 50%);
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+/* Global Styles */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-light);
+}
+
+/* Selection color */
+::selection {
+  background-color: var(--color-accent);
+  color: white;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(99, 102, 241, 0); }
+}
+
+@keyframes skeleton {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.4s ease-out forwards;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--color-bg-tertiary) 25%, var(--color-bg-elevated) 50%, var(--color-bg-tertiary) 75%);
+  background-size: 200% 100%;
+  animation: skeleton 1.5s ease-in-out infinite;
+}
+
+/* Markdown content styling */
+.markdown-content h1 { font-size: 1.5rem; font-weight: 700; margin: 1rem 0 0.5rem; }
+.markdown-content h2 { font-size: 1.25rem; font-weight: 600; margin: 0.75rem 0 0.5rem; }
+.markdown-content h3 { font-size: 1.1rem; font-weight: 600; margin: 0.5rem 0 0.25rem; }
+.markdown-content p { margin: 0.5rem 0; line-height: 1.6; }
+.markdown-content ul { list-style: disc; margin-left: 1.5rem; margin-top: 0.5rem; }
+.markdown-content ol { list-style: decimal; margin-left: 1.5rem; margin-top: 0.5rem; }
+.markdown-content li { margin: 0.25rem 0; }
+.markdown-content blockquote {
+  border-left: 3px solid var(--color-accent);
+  padding-left: 1rem;
+  color: var(--color-text-secondary);
+  margin: 0.5rem 0;
+}
+.markdown-content code {
+  background: var(--color-bg-tertiary);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+.markdown-content pre {
+  background: var(--color-bg-tertiary);
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 0.5rem 0;
+}
+.markdown-content pre code {
+  background: none;
+  padding: 0;
+}
+.markdown-content a {
+  color: var(--color-accent-hover);
+  text-decoration: underline;
+}
+.markdown-content img {
+  max-width: 100%;
+  border-radius: 8px;
+  margin: 0.5rem 0;
 }

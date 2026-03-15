@@ -6,15 +6,30 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "setup": "node setup-pb.js",
+    "setup-then-bot": "node run-setup-then-bot.js",
+    "bot": "node bot.mjs",
+    "seed": "node seed-example-post.js"
   },
   "dependencies": {
+    "date-fns": "^4.1.0",
+    "dompurify": "^3.3.3",
+    "dotenv": "^17.3.1",
+    "eventsource": "^2.0.2",
+    "jszip": "^3.10.1",
     "next": "16.1.6",
+    "openai": "^6.27.0",
+    "pocketbase": "^0.26.8",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "react-hot-toast": "^2.6.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/dompurify": "^3.0.5",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
