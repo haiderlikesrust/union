@@ -32,10 +32,11 @@ export async function getAdminClient(): Promise<PocketBase | null> {
 /**
  * Recalculate post score from post_votes and update the post record.
  * Call this after any vote create/update/delete for the post.
+ * @returns true if score was updated, false if admin client missing or update failed
  */
-export async function recalcPostScore(postId: string): Promise<void> {
+export async function recalcPostScore(postId: string): Promise<boolean> {
     const pb = await getAdminClient();
-    if (!pb) return;
+    if (!pb) return false;
     try {
         const votes = await pb.collection('post_votes').getFullList({
             filter: `post = "${postId}"`,
@@ -43,9 +44,11 @@ export async function recalcPostScore(postId: string): Promise<void> {
         });
         const score = (votes as unknown as { value: number }[]).reduce((sum, v) => sum + (v.value || 0), 0);
         await pb.collection('posts').update(postId, { score });
+        return true;
     } catch (e) {
         if (process.env.NODE_ENV === 'development') {
             console.error('[pocketbase-admin] recalcPostScore failed:', e instanceof Error ? e.message : e);
         }
+        return false;
     }
 }

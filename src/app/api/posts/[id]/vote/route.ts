@@ -63,8 +63,8 @@ export async function POST(
             });
         }
 
-        await recalcPostScore(postId);
-        return NextResponse.json({ ok: true });
+        const scoreSynced = await recalcPostScore(postId);
+        return NextResponse.json({ ok: true, scoreSynced });
     } catch (e) {
         if (process.env.NODE_ENV === 'development') {
             console.error('[api/posts/vote]', e instanceof Error ? e.message : e);

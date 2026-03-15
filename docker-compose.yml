@@ -1,6 +1,6 @@
 # The Union — run on VPS or locally
 # PocketBase must be reachable at NEXT_PUBLIC_POCKETBASE_URL (and POCKETBASE_URL for server-side).
-# Create a .env file with NEXT_PUBLIC_POCKETBASE_URL, POCKETBASE_URL, STORAGE_ENCRYPTION_KEY, etc.
+# Create a .env file with all variables below. Without POCKETBASE_ADMIN_*, upvotes will not persist after refresh.
 
 services:
   app:
@@ -12,11 +12,11 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      # Point to your PocketBase (same host or another server)
       - NEXT_PUBLIC_POCKETBASE_URL=${NEXT_PUBLIC_POCKETBASE_URL:-http://127.0.0.1:8090}
       - POCKETBASE_URL=${POCKETBASE_URL:-http://127.0.0.1:8090}
-      # Required for encrypted storage
+      # Required: without these, post scores (upvotes) will not persist after page refresh
+      - POCKETBASE_ADMIN_EMAIL=${POCKETBASE_ADMIN_EMAIL}
+      - POCKETBASE_ADMIN_PASSWORD=${POCKETBASE_ADMIN_PASSWORD}
       - STORAGE_ENCRYPTION_KEY=${STORAGE_ENCRYPTION_KEY}
-      # Optional: ZAI API for knowledge summarization
       - ZAI_API_KEY=${ZAI_API_KEY}
     restart: unless-stopped
