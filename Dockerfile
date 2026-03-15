@@ -14,7 +14,9 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Build-time env (optional; override at docker run for real values)
+# Build-time env: NEXT_PUBLIC_* is inlined into the client bundle, so pass via --build-arg
+ARG NEXT_PUBLIC_POCKETBASE_URL=http://127.0.0.1:8090
+ENV NEXT_PUBLIC_POCKETBASE_URL=$NEXT_PUBLIC_POCKETBASE_URL
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 

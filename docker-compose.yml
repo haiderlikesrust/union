@@ -1,9 +1,13 @@
 # The Union — run on VPS or locally
 # PocketBase must be reachable at NEXT_PUBLIC_POCKETBASE_URL (and POCKETBASE_URL for server-side).
+# Create a .env file with NEXT_PUBLIC_POCKETBASE_URL, POCKETBASE_URL, STORAGE_ENCRYPTION_KEY, etc.
 
 services:
   app:
-    build: .
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_POCKETBASE_URL: ${NEXT_PUBLIC_POCKETBASE_URL:-http://127.0.0.1:8090}
     ports:
       - "3000:3000"
     environment:
