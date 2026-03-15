@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useAuth } from '@/lib/auth';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { User } from '@/lib/types';
@@ -11,7 +11,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 
-export default function NewMessagePage() {
+function NewMessageContent() {
     const { pb, user } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -181,5 +181,17 @@ export default function NewMessagePage() {
             </main>
             <MobileNav />
         </>
+    );
+}
+
+export default function NewMessagePage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-bg-primary">
+                <Skeleton className="w-64 h-12 rounded-xl" />
+            </div>
+        }>
+            <NewMessageContent />
+        </Suspense>
     );
 }

@@ -80,17 +80,17 @@ export default function StoragePage() {
     const fetchList = useCallback(async () => {
         if (!user) return;
         try {
-            const list = await pb.collection('user_storage').getFullList({
+            const list = (await pb.collection('user_storage').getFullList({
                 filter: `user = "${user.id}"`,
                 sort: '-created',
-            });
-            const items = (list || []).map((r: { id: string; name: string; size: number; mimeType: string; created: string; file: string }) => ({
-                id: r.id,
-                name: r.name,
-                size: r.size ?? 0,
-                mimeType: r.mimeType ?? '',
-                created: r.created,
-                file: r.file ?? '',
+            })) as unknown as Array<Record<string, unknown>>;
+            const items: StorageItem[] = (list || []).map((r) => ({
+                id: String(r.id ?? ''),
+                name: String(r.name ?? ''),
+                size: Number(r.size ?? 0),
+                mimeType: String(r.mimeType ?? ''),
+                created: String(r.created ?? ''),
+                file: String(r.file ?? ''),
             }));
             const usedBytes = items.reduce((sum, i) => sum + i.size, 0);
             setData({ items, usedBytes, quotaBytes: USER_STORAGE_QUOTA_BYTES });

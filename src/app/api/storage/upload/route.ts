@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
         pbForm.append('size', String(size));
         pbForm.append('mimeType', mimeType);
         pbForm.append('nonce', nonce);
-        pbForm.append('file', new Blob([encrypted]), 'encrypted.bin');
+        pbForm.append('file', new Blob([new Uint8Array(encrypted)]), 'encrypted.bin');
 
         const createRes = await fetch(`${PB_URL}/api/collections/user_storage/records`, {
             method: 'POST',

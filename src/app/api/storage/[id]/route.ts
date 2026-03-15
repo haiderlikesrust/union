@@ -52,7 +52,7 @@ export async function GET(
         const encrypted = Buffer.from(await fileRes.arrayBuffer());
         const decrypted = decryptFile(encrypted, user.id, record.nonce);
 
-        return new NextResponse(decrypted, {
+        return new NextResponse(new Uint8Array(decrypted), {
             headers: {
                 'Content-Type': record.mimeType || 'application/octet-stream',
                 'Content-Disposition': `attachment; filename="${encodeURIComponent(record.name)}"`,

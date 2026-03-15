@@ -8,7 +8,7 @@
  *   node setup-pb.js admin@theunion.com mypassword123
  */
 
-const PB_URL = process.env.NEXT_PUBLIC_POCKETBASE_URL || 'http://181.214.99.221:8090';
+const PB_URL = process.env.NEXT_PUBLIC_POCKETBASE_URL || 'https://pb.narf.gay';
 
 async function main() {
     const [, , email, password] = process.argv;
@@ -81,6 +81,28 @@ async function main() {
         const data = await res.json();
         console.log(`   ✅ ${name} — created (${data.id})`);
         return data.id;
+    }
+
+    // Helper: add video support to posts.image field (for new or existing collections)
+    async function ensurePostsImageAcceptsVideo() {
+        const res = await fetch(`${PB_URL}/api/collections/posts`, { headers });
+        if (!res.ok) return;
+        const col = await res.json();
+        const fields = col.fields || col.schema || [];
+        const imageField = fields.find(f => f.name === 'image');
+        if (!imageField || !imageField.options) return;
+        const mimeTypes = imageField.options.mimeTypes || [];
+        const videoTypes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/ogg'];
+        const added = videoTypes.filter(t => !mimeTypes.includes(t));
+        if (added.length === 0) return;
+        imageField.options.mimeTypes = [...mimeTypes, ...added];
+        if (imageField.options.maxSize < 52428800) imageField.options.maxSize = 52428800; // 50MB
+        const updateRes = await fetch(`${PB_URL}/api/collections/posts`, {
+            method: 'PATCH',
+            headers,
+            body: JSON.stringify({ fields: fields, schema: fields }),
+        });
+        if (updateRes.ok) console.log('   ✅ posts — image field updated to allow video (mp4, webm, etc.)');
     }
 
     // Helper: update existing users collection to add custom fields
@@ -217,7 +239,7 @@ async function main() {
             { name: 'title', type: 'text', required: true, options: { maxSize: 300 } },
             { name: 'type', type: 'select', required: true, options: { values: ['text', 'image', 'link'], maxSelect: 1 } },
             { name: 'body', type: 'editor', options: { maxSize: 50000 } },
-            { name: 'image', type: 'file', options: { maxSelect: 1, maxSize: 10485760, mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'] } },
+            { name: 'image', type: 'file', options: { maxSelect: 1, maxSize: 52428800, mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'video/mp4', 'video/webm', 'video/quicktime', 'video/ogg'] } },
             { name: 'url', type: 'url' },
             { name: 'author', type: 'relation', required: true, options: { collectionId: usersColId, maxSelect: 1 } },
             { name: 'flair', type: 'select', options: { values: ['discussion', 'question', 'news', 'meme', 'oc', 'meta', 'announcement'], maxSelect: 1 } },
@@ -234,6 +256,8 @@ async function main() {
         updateRule: '@request.auth.id = author || @request.auth.role = "admin"',
         deleteRule: '@request.auth.id = author',
     });
+
+    await ensurePostsImageAcceptsVideo();
 
     // ── Step 3: Create comments collection ──
     const commentsId = await createCollection({

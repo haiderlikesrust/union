@@ -49,8 +49,7 @@ export default function EditPostPage() {
         e.preventDefault();
         setIsSubmitting(true);
         try {
-            const data: Record<string, string> = { title: title.trim(), flair };
-            if (type === 'text') data.body = body;
+            const data: Record<string, string> = { title: title.trim(), body, flair };
             if (type === 'link') data.url = url;
 
             await pb.collection('posts').update(id, data);
@@ -107,22 +106,24 @@ export default function EditPostPage() {
                                 </div>
                             </div>
 
-                            {type === 'text' && (
-                                <textarea
-                                    value={body}
-                                    onChange={(e) => setBody(e.target.value)}
-                                    rows={8}
-                                    className="w-full px-4 py-3 bg-bg-tertiary border border-border rounded-xl text-text-primary focus:border-accent focus:outline-none resize-none"
-                                />
-                            )}
+                            <textarea
+                                value={body}
+                                onChange={(e) => setBody(e.target.value)}
+                                rows={8}
+                                placeholder="Post content (Markdown supported)"
+                                className="w-full px-4 py-3 bg-bg-tertiary border border-border rounded-xl text-text-primary focus:border-accent focus:outline-none resize-none placeholder:text-text-muted"
+                            />
 
                             {type === 'link' && (
-                                <input
-                                    type="url"
-                                    value={url}
-                                    onChange={(e) => setUrl(e.target.value)}
-                                    className="w-full px-4 py-3 bg-bg-tertiary border border-border rounded-xl text-text-primary focus:border-accent focus:outline-none"
-                                />
+                                <div>
+                                    <label className="block text-xs font-medium text-text-muted mb-1">Link URL</label>
+                                    <input
+                                        type="url"
+                                        value={url}
+                                        onChange={(e) => setUrl(e.target.value)}
+                                        className="w-full px-4 py-3 bg-bg-tertiary border border-border rounded-xl text-text-primary focus:border-accent focus:outline-none"
+                                    />
+                                </div>
                             )}
 
                             <div className="flex gap-3 justify-end pt-2">

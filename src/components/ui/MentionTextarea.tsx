@@ -39,11 +39,14 @@ export function MentionTextarea({ value, onChange, placeholder, rows = 3, classN
                 sort: 'username',
                 fields: 'username,avatar',
             });
-            const list = (res.items || []).map((u: { id: string; username: string; avatar?: string }) => ({
-                id: u.id,
-                username: u.username || '',
-                avatar: u.avatar,
-            })).filter((u: UserOption) => u.username);
+            const raw = (res.items || []) as unknown as Array<Record<string, unknown>>;
+            const list: UserOption[] = raw
+                .map((u) => ({
+                    id: String(u.id ?? ''),
+                    username: String(u.username ?? ''),
+                    avatar: u.avatar != null ? String(u.avatar) : undefined,
+                }))
+                .filter((u) => u.username);
             setUsers(list);
             setFilteredUsers(list);
         } catch {

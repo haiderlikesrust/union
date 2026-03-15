@@ -60,7 +60,7 @@ function SearchContent() {
                                 filter: filterByPosts,
                                 fields: 'post',
                             });
-                            (kpRes as { post: string }[]).forEach((kp) => knowledgePostIds.add(kp.post));
+                            (kpRes as unknown as { post: string }[]).forEach((kp) => knowledgePostIds.add(kp.post));
                         } catch {
                             // ignore
                         }

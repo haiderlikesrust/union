@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { createBrowserClient } from '@/lib/pocketbase';
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
     const pb = createBrowserClient();
     const searchParams = useSearchParams();
     const token = searchParams.get('token') || '';
@@ -70,5 +70,17 @@ export default function ResetPasswordPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function ResetPasswordPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center p-4 bg-bg-primary">
+                <div className="w-full max-w-md h-64 bg-bg-secondary rounded-2xl border border-border animate-pulse" />
+            </div>
+        }>
+            <ResetPasswordContent />
+        </Suspense>
     );
 }

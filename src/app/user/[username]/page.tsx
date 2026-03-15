@@ -474,7 +474,7 @@ export default function UserProfilePage() {
                                             <p className="text-xs text-text-muted mb-1">
                                                 {(c.expand?.post as Post)?.title && (
                                                     <>
-                                                        <span className="text-accent font-medium">{(c.expand.post as Post).title}</span>
+                                                        <span className="text-accent font-medium">{(c.expand?.post as Post)?.title}</span>
                                                         <span className="mx-1.5">·</span>
                                                     </>
                                                 )}

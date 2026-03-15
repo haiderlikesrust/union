@@ -36,7 +36,7 @@ export async function exportPublicKey(publicKey: CryptoKey): Promise<string> {
 
 /** Import public key from stored string */
 export async function importPublicKey(b64: string): Promise<CryptoKey> {
-    const raw = b64Decode(b64);
+    const raw = new Uint8Array(b64Decode(b64));
     return crypto.subtle.importKey(
         'raw',
         raw,
@@ -54,7 +54,7 @@ export async function exportPrivateKey(privateKey: CryptoKey): Promise<string> {
 
 /** Import private key from localStorage */
 export async function importPrivateKey(b64: string): Promise<CryptoKey> {
-    const pkcs8 = b64Decode(b64);
+    const pkcs8 = new Uint8Array(b64Decode(b64));
     return crypto.subtle.importKey(
         'pkcs8',
         pkcs8,
@@ -109,8 +109,8 @@ export async function decrypt(
     ciphertextB64: string,
     nonceB64: string
 ): Promise<string> {
-    const iv = b64Decode(nonceB64);
-    const ciphertext = b64Decode(ciphertextB64);
+    const iv = new Uint8Array(b64Decode(nonceB64));
+    const ciphertext = new Uint8Array(b64Decode(ciphertextB64));
     const decrypted = await crypto.subtle.decrypt(
         {
             name: 'AES-GCM',

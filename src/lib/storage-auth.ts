@@ -40,12 +40,13 @@ export async function getCurrentUser(token: string | null): Promise<PbUser | nul
     try {
         const pb = new PocketBase(PB_URL);
         // Minimal record so authStore.isValid is true; authRefresh will replace with real user
-        const placeholder = { id: '_', collectionId: '_', collectionName: 'users' } as unknown as PbUser;
-        pb.authStore.save(token, placeholder);
+        const placeholder = { id: '_', collectionId: '_', collectionName: 'users' };
+        // PocketBase authStore.save expects RecordModel (not exported); placeholder has the required fields
+        pb.authStore.save(token, placeholder as PocketBase['authStore'] extends { save(_: string, m: infer M): void } ? M : never);
         if (!pb.authStore.isValid) return null;
         const authResponse = await pb.collection('users').authRefresh();
         const record = authResponse?.record;
-        if (record && record.id && record.id !== '_') return record as PbUser;
+        if (record && record.id && record.id !== '_') return record as unknown as PbUser;
         return null;
     } catch (e) {
         if (process.env.NODE_ENV === 'development') {

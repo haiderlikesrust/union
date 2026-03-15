@@ -11,6 +11,12 @@ import { useAuth } from '@/lib/auth';
 import { useSiteSettings } from '@/lib/site-settings';
 import { getPostLockState, setPostLockState } from '@/lib/postLockState';
 import { timeAgo, formatNumber, truncateText, extractDomain } from '@/lib/utils';
+
+function isVideoMedia(filename: string): boolean {
+    if (!filename) return false;
+    const lower = filename.toLowerCase();
+    return lower.endsWith('.mp4') || lower.endsWith('.webm') || lower.endsWith('.mov') || lower.endsWith('.ogg');
+}
 import { getRecordFileUrl } from '@/lib/pocketbase';
 import { ReportModal } from '@/components/ui/ReportModal';
 import { ImageLightbox } from '@/components/ui/ImageLightbox';
@@ -282,23 +288,41 @@ export function PostCard({ post, userVote, isSaved: initialSaved = false, onDele
 
                 {post.type === 'image' && post.image && (
                     <div className="mt-2 rounded-lg overflow-hidden border border-border">
-                        <ImageLightbox
-                            src={getRecordFileUrl(
-                                { id: post.id, collectionId: post.collectionId, collectionName: post.collectionName },
-                                post.image
-                            )}
-                            alt={post.title}
-                        >
-                            <img
+                        {isVideoMedia(post.image) ? (
+                            <video
+                                src={getRecordFileUrl(
+                                    { id: post.id, collectionId: post.collectionId, collectionName: post.collectionName },
+                                    post.image
+                                )}
+                                controls
+                                className={`w-full ${showFull ? 'max-h-[600px]' : 'max-h-[400px]'}`}
+                                preload="metadata"
+                                playsInline
+                            />
+                        ) : (
+                            <ImageLightbox
                                 src={getRecordFileUrl(
                                     { id: post.id, collectionId: post.collectionId, collectionName: post.collectionName },
                                     post.image
                                 )}
                                 alt={post.title}
-                                className={`w-full object-cover ${showFull ? 'max-h-[600px]' : 'max-h-[400px]'}`}
-                                loading="lazy"
-                            />
-                        </ImageLightbox>
+                            >
+                                <img
+                                    src={getRecordFileUrl(
+                                        { id: post.id, collectionId: post.collectionId, collectionName: post.collectionName },
+                                        post.image
+                                    )}
+                                    alt={post.title}
+                                    className={`w-full object-cover ${showFull ? 'max-h-[600px]' : 'max-h-[400px]'}`}
+                                    loading="lazy"
+                                />
+                            </ImageLightbox>
+                        )}
+                    </div>
+                )}
+                {post.type === 'image' && post.body && (
+                    <div className={`mt-2 text-sm text-text-secondary leading-relaxed markdown-content ${showFull ? '' : 'line-clamp-3'}`}>
+                        <MarkdownWithMentions content={showFull ? post.body : truncateText(post.body, 300)} />
                     </div>
                 )}
 
@@ -446,7 +470,7 @@ export function PostCard({ post, userVote, isSaved: initialSaved = false, onDele
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 setMoreMenuOpen(false);
-                                                handleDelete();
+                                                handleDelete(e);
                                             }}
                                             className="flex items-center gap-2 w-full px-4 py-2.5 text-left text-sm text-danger hover:bg-danger/10 rounded-lg"
                                         >
@@ -460,7 +484,7 @@ export function PostCard({ post, userVote, isSaved: initialSaved = false, onDele
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 setMoreMenuOpen(false);
-                                                handleToggleLock();
+                                                handleToggleLock(e);
                                             }}
                                             className="flex items-center gap-2 w-full px-4 py-2.5 text-left text-sm text-warning hover:bg-warning/10 rounded-lg"
                                         >
@@ -504,26 +528,39 @@ export function PostCard({ post, userVote, isSaved: initialSaved = false, onDele
                 </div>
             </div>
 
-            {/* Image thumbnail on the right for image posts (compact mode) */}
+            {/* Media thumbnail on the right (compact mode) */}
             {!showFull && post.type === 'image' && post.image && (
-                <div className="hidden md:block shrink-0 w-32 h-24 rounded-lg overflow-hidden border border-border">
-                    <ImageLightbox
-                        src={getRecordFileUrl(
-                            { id: post.id, collectionId: post.collectionId, collectionName: post.collectionName },
-                            post.image
-                        )}
-                        alt={post.title}
-                    >
-                        <img
+                <div className="hidden md:block shrink-0 w-32 h-24 rounded-lg overflow-hidden border border-border bg-bg-tertiary">
+                    {isVideoMedia(post.image) ? (
+                        <video
                             src={getRecordFileUrl(
                                 { id: post.id, collectionId: post.collectionId, collectionName: post.collectionName },
                                 post.image
                             )}
-                            alt=""
                             className="w-full h-full object-cover"
-                            loading="lazy"
+                            preload="metadata"
+                            muted
+                            playsInline
                         />
-                    </ImageLightbox>
+                    ) : (
+                        <ImageLightbox
+                            src={getRecordFileUrl(
+                                { id: post.id, collectionId: post.collectionId, collectionName: post.collectionName },
+                                post.image
+                            )}
+                            alt={post.title}
+                        >
+                            <img
+                                src={getRecordFileUrl(
+                                    { id: post.id, collectionId: post.collectionId, collectionName: post.collectionName },
+                                    post.image
+                                )}
+                                alt=""
+                                className="w-full h-full object-cover"
+                                loading="lazy"
+                            />
+                        </ImageLightbox>
+                    )}
                 </div>
             )}
         </div>
