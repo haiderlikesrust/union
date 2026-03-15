@@ -45,27 +45,34 @@ export function useVote({ collection, targetField, targetId, initialScore, initi
         }
 
         try {
-            // Try to find existing vote
-            const existing = await pb.collection(collection).getList(1, 1, {
-                filter: `${targetField} = "${targetId}" && user = "${user.id}"`,
-            });
-
-            if (existing.items.length > 0) {
-                const existingVote = existing.items[0];
-                if (existingVote.value === value) {
-                    // Remove vote
-                    await pb.collection(collection).delete(existingVote.id);
-                } else {
-                    // Switch vote
-                    await pb.collection(collection).update(existingVote.id, { value });
-                }
-            } else {
-                // Create new vote
-                await pb.collection(collection).create({
-                    [targetField]: targetId,
-                    user: user.id,
-                    value,
+            // For posts: use API so server can update post.score (persists after refresh)
+            if (collection === 'post_votes') {
+                const token = pb.authStore.token;
+                const res = await fetch(`/api/posts/${targetId}/vote`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+                    body: JSON.stringify({ value }),
                 });
+                if (!res.ok) throw new Error('Vote failed');
+            } else {
+                // Comments: direct PocketBase (comment.score can be synced later if needed)
+                const existing = await pb.collection(collection).getList(1, 1, {
+                    filter: `${targetField} = "${targetId}" && user = "${user.id}"`,
+                });
+                if (existing.items.length > 0) {
+                    const existingVote = existing.items[0];
+                    if (existingVote.value === value) {
+                        await pb.collection(collection).delete(existingVote.id);
+                    } else {
+                        await pb.collection(collection).update(existingVote.id, { value });
+                    }
+                } else {
+                    await pb.collection(collection).create({
+                        [targetField]: targetId,
+                        user: user.id,
+                        value,
+                    });
+                }
             }
         } catch {
             // Revert on error
