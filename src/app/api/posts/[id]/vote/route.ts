@@ -47,7 +47,7 @@ export async function POST(
             filter: `post = "${postId}" && user = "${user.id}"`,
         });
 
-        const existingVote = existing.items[0] as { id: string; value: number } | undefined;
+        const existingVote = existing.items[0] as unknown as { id: string; value: number } | undefined;
 
         if (existingVote) {
             if (existingVote.value === value) {
