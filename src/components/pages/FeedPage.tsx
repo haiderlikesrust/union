@@ -12,6 +12,7 @@ import { setPostLockState } from '@/lib/postLockState';
 import { useBlockList } from '@/hooks/useBlockList';
 import { useFollowList } from '@/hooks/useFollowList';
 import Link from 'next/link';
+import { POCKETBASE_URL } from '@/lib/pocketbase';
 
 export type FeedMode = 'all' | 'following';
 
@@ -200,10 +201,10 @@ export function FeedPage() {
                                 node setup-pb.js your-admin@email.com your-admin-password
                             </div>
                             <p className="text-xs text-text-muted">
-                                Make sure PocketBase is running and you&apos;ve created an admin account at{' '}
-                                <a href="http://127.0.0.1:8090/_/" target="_blank" rel="noopener noreferrer" className="text-accent hover:text-accent-hover">
-                                    http://127.0.0.1:8090/_/
-                                </a>
+                                Make sure PocketBase is running and you&apos;ve created an admin account.
+                                {user?.role === 'admin' && (
+                                    <> Admin panel: <a href={`${POCKETBASE_URL}/_/`} target="_blank" rel="noopener noreferrer" className="text-accent hover:text-accent-hover">{POCKETBASE_URL}/_/</a></>
+                                )}
                             </p>
                         </div>
                     )}
