@@ -143,12 +143,20 @@ export default function SettingsPage() {
                     <section className="mb-10">
                         <h2 className="text-lg font-semibold text-text-primary mb-3">Following</h2>
                         <p className="text-sm text-text-muted mb-3">You follow {followingIds.size} {followingIds.size === 1 ? 'person' : 'people'}. Their posts appear in your Following feed.</p>
-                        <Link
-                            href="/search"
-                            className="inline-block px-4 py-2 bg-bg-secondary hover:bg-bg-hover border border-border rounded-xl text-sm font-medium text-text-primary transition-colors"
-                        >
-                            Find users to follow
-                        </Link>
+                        <div className="flex flex-wrap gap-3">
+                            <Link
+                                href={`/user/${user.username}/connections?tab=following`}
+                                className="inline-block px-4 py-2 bg-bg-secondary hover:bg-bg-hover border border-border rounded-xl text-sm font-medium text-text-primary transition-colors"
+                            >
+                                View followers & following
+                            </Link>
+                            <Link
+                                href="/search"
+                                className="inline-block px-4 py-2 bg-bg-secondary hover:bg-bg-hover border border-border rounded-xl text-sm font-medium text-text-primary transition-colors"
+                            >
+                                Find users to follow
+                            </Link>
+                        </div>
                     </section>
 
                     <section>

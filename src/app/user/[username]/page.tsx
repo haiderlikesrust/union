@@ -28,6 +28,8 @@ export default function UserProfilePage() {
     const [tab, setTab] = useState<'overview' | 'posts' | 'comments'>('overview');
     const [isLoading, setIsLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
+    const [followerCount, setFollowerCount] = useState(0);
+    const [followingCount, setFollowingCount] = useState(0);
 
     // Edit state
     const [bio, setBio] = useState('');
@@ -59,21 +61,28 @@ export default function UserProfilePage() {
                 setProfileUser(u);
                 setBio(u.bio || '');
 
-                // Fetch user's posts
-                const userPosts = await pb.collection('posts').getList(1, 20, {
-                    filter: `author = "${u.id}"`,
-                    sort: '-created',
-                    expand: 'author,author.badges,badges',
-                });
+                const [userPosts, userComments, followersMeta, followingMeta] = await Promise.all([
+                    pb.collection('posts').getList(1, 20, {
+                        filter: `author = "${u.id}"`,
+                        sort: '-created',
+                        expand: 'author,author.badges,badges',
+                    }),
+                    pb.collection('comments').getList(1, 50, {
+                        filter: `author = "${u.id}"`,
+                        sort: '-created',
+                        expand: 'author,author.badges,post',
+                    }),
+                    pb.collection('user_follows').getList(1, 1, {
+                        filter: `following = "${u.id}"`,
+                    }),
+                    pb.collection('user_follows').getList(1, 1, {
+                        filter: `follower = "${u.id}"`,
+                    }),
+                ]);
                 setPosts(userPosts.items as unknown as Post[]);
-
-                // Fetch user's comments
-                const userComments = await pb.collection('comments').getList(1, 50, {
-                    filter: `author = "${u.id}"`,
-                    sort: '-created',
-                    expand: 'author,author.badges,post',
-                });
                 setComments(userComments.items as unknown as Comment[]);
+                setFollowerCount(followersMeta.totalItems);
+                setFollowingCount(followingMeta.totalItems);
             } catch (err) {
                 console.error(err);
             } finally {
@@ -250,6 +259,20 @@ export default function UserProfilePage() {
                                             <svg className="w-3.5 h-3.5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
                                             <span className="font-medium text-text-primary">{formatNumber(profileUser.karma || 0)}</span> karma
                                         </span>
+                                        <Link
+                                            href={`/user/${profileUser.username}/connections?tab=followers`}
+                                            className="flex items-center gap-1.5 hover:text-text-primary transition-colors"
+                                        >
+                                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5V9l-5 4-5-4v11h5m0 0v-6h0m-10 6H2V9l5 4 5-4" /></svg>
+                                            <span><span className="font-medium text-text-primary">{formatNumber(followerCount)}</span> followers</span>
+                                        </Link>
+                                        <Link
+                                            href={`/user/${profileUser.username}/connections?tab=following`}
+                                            className="flex items-center gap-1.5 hover:text-text-primary transition-colors"
+                                        >
+                                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5V9l-5 4-5-4v11h5m0 0v-6h0m-10 6H2V9l5 4 5-4" /></svg>
+                                            <span><span className="font-medium text-text-primary">{formatNumber(followingCount)}</span> following</span>
+                                        </Link>
                                         <span className="flex items-center gap-1.5">
                                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                                             Joined {timeAgo(profileUser.created)}
